@@ -1,0 +1,21 @@
+json_file: "beanconqueror.json"  # JSON file path
+output_dir: "Beans"  # Output directory
+
+
+# Turning off any of the properties by making it false
+properties:
+  name: true
+  roaster: true
+  roasting_date: true
+  note: true
+  aromatics: true
+  weight: true
+  cost: true
+  rating: true
+  favourite: true
+  finished: true
+  decaffeinated: true
+  roast: true
+  roast_range: true
+  bean_mix: true
+  attachments: true  # Image handling
