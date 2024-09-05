@@ -4,7 +4,7 @@
 
 ## Introduction
 
-This project provides a Python script that converts your Beanconqueror JSON export into markdown files suitable for use with [Obsidian](https://obsidian.md/). The script reads a `config.yaml` file to determine which properties to include in the output.
+This project provides a Python script that converts your [Beanconqueror](https://github.com/graphefruit/Beanconqueror) JSON export into markdown files suitable for use with [Obsidian](https://obsidian.md/). The script reads a `config.yaml` file to determine which properties to include in the output. 
 
 ## Features
 
@@ -25,6 +25,8 @@ pip install -r requirements.txt
 ```
 
 ## Usage 
+Beanconqueror allows export of data from within the app. On android it exports full data but doesn't do so for iOS. For iOS you will have to copy the pictures from Files Beanconqueror folder. 
+
 Take a look at the at `config.yaml` turn off any properties you don't want to be outputted, run the script with
 
 ```bash
