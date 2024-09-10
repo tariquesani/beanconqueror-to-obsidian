@@ -26,7 +26,17 @@ def format_date(date_str):
         return date_obj.strftime("%Y-%m-%d")
     except ValueError:
         return date_str
-    
+
+# Function to generate daily note link based on roasting date
+def generate_daily_note_link(roasting_date):
+    date_obj = datetime.strptime(roasting_date, '%Y-%m-%d')
+    year = date_obj.strftime('%Y')
+    month_num = date_obj.strftime('%m')
+    month_name = date_obj.strftime('%B')
+    day_date = date_obj.strftime('%Y-%m-%d')
+    day_name = date_obj.strftime('%A')
+    return f"/DailyNotes/{year}/{month_num}-{month_name}/{day_date}-{day_name}.md"
+
 # Function to properly capitalise strings
 def format_string(s):
     return ' '.join(word.capitalize() for word in s.split('_'))
@@ -55,7 +65,8 @@ def create_markdown(bean):
     if properties.get('roasting_date', False):
         roasting_date = format_date(bean.get('roastingDate', ''))
         yaml_frontmatter.append(f'roasting_date: "{roasting_date}"')
-        content.append(f"**Roasting Date:** {roasting_date}")
+        daily_note_link = generate_daily_note_link(roasting_date)
+        content.append(f"**Roasting Date:** [{roasting_date}]({daily_note_link})")
 
     if properties.get('note', False):
         note = bean.get('note', 'No Notes')
@@ -117,7 +128,7 @@ def create_markdown(bean):
             content.append(f"![Bean Image]({image_path})")
 
     # Combine YAML frontmatter and content
-    yaml_section = "---\n" + "\n".join(yaml_frontmatter) + "\n---\n\n"
+    yaml_section = "---\n" + "\n".join(yaml_frontmatter) + "\ntags:\n - Coffee/Bean\n---\n\n"
     markdown_content = yaml_section + "\n".join(content)
 
     return markdown_content
