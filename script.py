@@ -16,10 +16,14 @@ properties = config['properties']
 os.makedirs(output_dir, exist_ok=True)
 
 # Function to sanitize file names
+
+
 def sanitize_filename(name):
     return "".join(c for c in name if c.isalnum() or c in " ._-").rstrip()
 
 # Function to format date
+
+
 def format_date(date_str):
     try:
         date_obj = datetime.fromisoformat(date_str.replace("Z", "+00:00"))
@@ -27,9 +31,11 @@ def format_date(date_str):
     except ValueError:
         return date_str
 
-# Function to generate daily note link based on roasting date
-def generate_daily_note_link(roasting_date):
-    date_obj = datetime.strptime(roasting_date, '%Y-%m-%d')
+# Function to generate daily note link based on a date string
+
+
+def generate_daily_note_link(date_str):
+    date_obj = datetime.strptime(date_str, '%Y-%m-%d')
     year = date_obj.strftime('%Y')
     month_num = date_obj.strftime('%m')
     month_name = date_obj.strftime('%B')
@@ -38,10 +44,14 @@ def generate_daily_note_link(roasting_date):
     return f"/DailyNotes/{year}/{month_num}-{month_name}/{day_date}-{day_name}.md"
 
 # Function to properly capitalise strings
+
+
 def format_string(s):
     return ' '.join(word.capitalize() for word in s.split('_'))
 
 # Function to convery bool to symbols
+
+
 def format_bool(value):
     return '✓' if value else '✗'
 
@@ -66,7 +76,14 @@ def create_markdown(bean):
         roasting_date = format_date(bean.get('roastingDate', ''))
         yaml_frontmatter.append(f'roasting_date: "{roasting_date}"')
         daily_note_link = generate_daily_note_link(roasting_date)
-        content.append(f"**Roasting Date:** [{roasting_date}]({daily_note_link})")
+        content.append(
+            f"**Roasting Date:** [{roasting_date}]({daily_note_link})")
+
+    if properties.get('open_date', False):
+        open_date = format_date(bean.get('openDate', ''))
+        yaml_frontmatter.append(f'open_date: "{open_date}"')
+        daily_note_link = generate_daily_note_link(open_date)
+        content.append(f"**Opening Date:** [{open_date}]({daily_note_link})")
 
     if properties.get('note', False):
         note = bean.get('note', 'No Notes')
@@ -117,7 +134,7 @@ def create_markdown(bean):
         content.append(f"**Roast Range:** {roast_range}")
 
     if properties.get('bean_mix', False):
-        bean_mix = format_string(bean.get('beanMix','Unknown'))
+        bean_mix = format_string(bean.get('beanMix', 'Unknown'))
         yaml_frontmatter.append(f'bean_mix: "{bean_mix}"')
         content.append(f"**Bean Mix:** {bean_mix}")
 
@@ -128,10 +145,12 @@ def create_markdown(bean):
             content.append(f"![Bean Image]({image_path})")
 
     # Combine YAML frontmatter and content
-    yaml_section = "---\n" + "\n".join(yaml_frontmatter) + "\ntags:\n - Coffee/Bean\n---\n\n"
+    yaml_section = "---\n" + \
+        "\n".join(yaml_frontmatter) + "\ntags:\n - Coffee/Bean\n---\n\n"
     markdown_content = yaml_section + "\n".join(content)
 
     return markdown_content
+
 
 # Read the JSON file
 with open(json_file, 'r', encoding='utf-8') as file:

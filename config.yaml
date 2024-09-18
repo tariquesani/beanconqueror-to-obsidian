@@ -7,6 +7,7 @@ properties:
   name: true
   roaster: true
   roasting_date: true
+  open_date: true
   note: true
   aromatics: true
   weight: true
