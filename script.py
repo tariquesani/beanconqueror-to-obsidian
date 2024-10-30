@@ -75,11 +75,10 @@ def create_markdown(bean):
 
     if properties.get('roasting_date', False):
         roasting_date = format_date(bean.get('roastingDate', ''))
-        print(roasting_date)
-        yaml_frontmatter.append(f'roasting_date: "{roasting_date}"')
-        daily_note_link = generate_daily_note_link(roasting_date)
-        content.append(
-            f"**Roasting Date:** [{roasting_date}]({daily_note_link})")
+        if roasting_date != '':
+            yaml_frontmatter.append(f'roasting_date: "{roasting_date}"')
+            daily_note_link = generate_daily_note_link(roasting_date)
+            content.append(f"**Roasting Date:** [{roasting_date}]({daily_note_link})")
 
     if properties.get('open_date', False):
         open_date = format_date(bean.get('openDate', ''))
