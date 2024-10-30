@@ -36,6 +36,7 @@ def format_date(date_str):
 
 def generate_daily_note_link(date_str):
     date_obj = datetime.strptime(date_str, '%Y-%m-%d')
+    # date_obj = datetime.strptime(date_str, '%Y-%m-%dT%H:%M:%S.%fZ')
     year = date_obj.strftime('%Y')
     month_num = date_obj.strftime('%m')
     month_name = date_obj.strftime('%B')
@@ -74,6 +75,7 @@ def create_markdown(bean):
 
     if properties.get('roasting_date', False):
         roasting_date = format_date(bean.get('roastingDate', ''))
+        print(roasting_date)
         yaml_frontmatter.append(f'roasting_date: "{roasting_date}"')
         daily_note_link = generate_daily_note_link(roasting_date)
         content.append(
@@ -81,9 +83,10 @@ def create_markdown(bean):
 
     if properties.get('open_date', False):
         open_date = format_date(bean.get('openDate', ''))
-        yaml_frontmatter.append(f'open_date: "{open_date}"')
-        daily_note_link = generate_daily_note_link(open_date)
-        content.append(f"**Opening Date:** [{open_date}]({daily_note_link})")
+        if open_date != '':
+            yaml_frontmatter.append(f'open_date: "{open_date}"')
+            daily_note_link = generate_daily_note_link(open_date)
+            content.append(f"**Opening Date:** [{open_date}]({daily_note_link})")
 
     if properties.get('note', False):
         note = bean.get('note', 'No Notes')
@@ -158,6 +161,7 @@ with open(json_file, 'r', encoding='utf-8') as file:
 
 # Process each bean and create a markdown file
 for bean in data.get('BEANS', []):
+    print(f"Processing {bean.get('name', 'Unnamed Bean')}...")
     bean_name = sanitize_filename(bean.get('name', 'Unnamed Bean'))
     markdown_content = create_markdown(bean)
     markdown_file = os.path.join(output_dir, f"{bean_name}.md")
