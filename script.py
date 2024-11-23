@@ -144,6 +144,7 @@ def create_markdown(bean):
         attachments = bean.get('attachments', [])
         if attachments:
             image_path = f"photos/beans/{os.path.basename(attachments[0])}"
+            yaml_frontmatter.append(f'poster: "[[{image_path}]]"')
             content.append(f"![Bean Image]({image_path})")
 
     # Combine YAML frontmatter and content
