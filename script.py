@@ -78,14 +78,16 @@ def create_markdown(bean):
         if roasting_date != '':
             yaml_frontmatter.append(f'roasting_date: "{roasting_date}"')
             daily_note_link = generate_daily_note_link(roasting_date)
-            content.append(f"**Roasting Date:** [{roasting_date}]({daily_note_link})")
+            content.append(
+                f"**Roasting Date:** [{roasting_date}]({daily_note_link})")
 
     if properties.get('open_date', False):
         open_date = format_date(bean.get('openDate', ''))
         if open_date != '':
             yaml_frontmatter.append(f'open_date: "{open_date}"')
             daily_note_link = generate_daily_note_link(open_date)
-            content.append(f"**Opening Date:** [{open_date}]({daily_note_link})")
+            content.append(
+                f"**Opening Date:** [{open_date}]({daily_note_link})")
 
     if properties.get('note', False):
         note = bean.get('note', 'No Notes')
@@ -145,12 +147,39 @@ def create_markdown(bean):
         if attachments:
             image_path = f"photos/beans/{os.path.basename(attachments[0])}"
             yaml_frontmatter.append(f'poster: "[[{image_path}]]"')
-            content.append(f"![Bean Image]({image_path})")
+            content.append(f"![Bean Image]({image_path})\n\n")
+
+    content.append("**Repeat purchases**\n\n")
+    content.append("| Roasting Date | Weight| Cost|\n|---|---:|---:|\n")
 
     # Combine YAML frontmatter and content
     yaml_section = "---\n" + \
         "\n".join(yaml_frontmatter) + "\ntags:\n - Coffee/Bean\n---\n\n"
     markdown_content = yaml_section + "\n".join(content)
+
+    return markdown_content
+
+
+def amend_markdown(makrown_file, bean):
+    roasting_date = format_date(bean.get('roastingDate', ''))
+    daily_note_link = generate_daily_note_link(roasting_date)
+    weight = bean.get('weight', 0)
+    cost = bean.get('cost', 0)
+
+    with open(makrown_file, 'r', encoding='utf-8') as file:
+        lines = file.readlines()
+        for i, line in enumerate(lines):
+            if line.startswith("roasting_date:"):
+                lines[i] = f'roasting_date: "{roasting_date}"\n'
+            elif line.startswith("weight:"):
+                lines[i] = f'weight: {weight}g\n'
+            elif line.startswith("cost:"):
+                lines[i] = f'cost: ₹{cost}\n'
+
+        lines.append(f"| [{roasting_date}]({daily_note_link}) | {
+                     weight}g | ₹{cost}|\n")
+
+        markdown_content = ''.join(lines)
 
     return markdown_content
 
@@ -163,8 +192,14 @@ with open(json_file, 'r', encoding='utf-8') as file:
 for bean in data.get('BEANS', []):
     print(f"Processing {bean.get('name', 'Unnamed Bean')}...")
     bean_name = sanitize_filename(bean.get('name', 'Unnamed Bean'))
-    markdown_content = create_markdown(bean)
     markdown_file = os.path.join(output_dir, f"{bean_name}.md")
+
+    if os.path.exists(markdown_file):
+        print(f"Appending history to {bean_name}.md...")
+        markdown_content = amend_markdown(markdown_file, bean)
+    else:
+        print(f"Creating {bean_name}.md...")
+        markdown_content = create_markdown(bean)
 
     with open(markdown_file, 'w', encoding='utf-8') as md_file:
         md_file.write(markdown_content)
